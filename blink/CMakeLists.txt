@@ -41,6 +41,8 @@ add_executable(blink
 
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib)
+target_link_libraries(blink pico_stdlib hardware_i2c)
+
 
 if (PICO_CYW43_SUPPORTED)
     target_link_libraries(blink pico_cyw43_arch_none)
