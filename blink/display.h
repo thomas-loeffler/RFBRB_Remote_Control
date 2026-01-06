@@ -1,0 +1,26 @@
+
+#include "pico/stdlib.h"
+
+
+
+void send_i2c_command(uint8_t cmd);
+
+void send_i2c_data(uint8_t data);
+
+void set_col_addr(uint8_t start, uint8_t end);
+
+void set_page_addr(uint8_t start, uint8_t end);
+
+void send_small_char(int character, uint8_t col, uint8_t page);
+
+void clear_display(void);
+
+void screen_init(void);
+
+void display_trine_logo(void);
+
+void send_big_char(int character, uint8_t col, uint8_t page);
+
+
+
+
