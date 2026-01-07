@@ -21,6 +21,8 @@ void display_trine_logo(void);
 
 void send_big_char(int character, uint8_t col, uint8_t page);
 
+void send_PS_symbol(int character, uint8_t col, uint8_t page);
+
 
 
 
