@@ -1,20 +1,6 @@
 
-
-//////////////////////////////////////
-//			   INCLUDES             //
-//////////////////////////////////////
-
-
-
 #include "pico/stdlib.h"
-#include "hardware/i2c.h"
-
-
-//////////////////////////////////////
-//	        CONST VARIABLES         //
-//////////////////////////////////////
-
-
+#include "display_font.h"
 
 const uint8_t Trine_Logo[300]= {
     0x00, 0x0E, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0xFE, 0xFE, 0xFE, 0x06, 0x06,
@@ -51,7 +37,7 @@ const uint8_t University_Logo[100]= {
 
 
 
-const uint8_t small_font[91][5] = {
+const uint8_t font_8p[91][5] = {
 
     // Numbers 0-9 (decimal)
     [0] = {0x3E, 0x51, 0x49, 0x45, 0x3E}, // '0'
@@ -109,7 +95,7 @@ const uint8_t small_font[91][5] = {
 
 
 // 8x16 upright uppercase letters for SSD1306
-const uint8_t big_letters[91][16] = {
+const uint8_t font_16p[91][16] = {
     // Numbers 0-9 (decimal)
     [0] = { 0x00, 0xE0, 0x10, 0x08, 0x08, 0x10, 0xE0, 0x00,
             0x00, 0x0F, 0x10, 0x20, 0x20, 0x10, 0x0F, 0x00}, // 0
@@ -232,189 +218,7 @@ const uint8_t PS_symbols[5][32] = {
     {0xE0, 0xF8, 0xFC, 0xFE, 0xFE, 0x3F, 0x0F, 0xC3,    0xC3, 0x0F, 0x3F, 0xFE, 0xFE, 0xFC, 0xF8, 0xE0,
      0x07, 0x1F, 0x3F, 0x63, 0x60, 0xE4, 0xE7, 0xE7,    0xE7, 0xE7, 0xE4, 0x60, 0x63, 0x3F, 0x1F, 0x07},
 
-
     // Plain Circle/Dot
     {0xE0, 0xF8, 0xFC, 0xFE, 0xFE, 0xFF, 0xFF, 0xFF,    0xFF, 0xFF, 0xFF, 0xFE, 0xFE, 0xFC, 0xF8, 0xE0,
      0x07, 0x1F, 0x3F, 0x7F, 0x7F, 0xFF, 0xFF, 0xFF,    0xFF, 0xFF, 0xFF, 0x7F, 0x7F, 0x3F, 0x1F, 0x07},
     };
-
-
-
-
-
-
-
-
-
-//////////////////////////////////////
-//			   FUNCTIONS            //
-//////////////////////////////////////
-
-
-void send_i2c_command(uint8_t cmd) {
-
-    // first byte of the buffer is 0x00 for the control byte (signifying a command)
-    // Bit 7	= Co (Continuation)     Co = 0 → last byte in a transmission (or just sending one command)
-    //                                  Co = 1 → more bytes to follow (for sending multiple commands in one I²C write)
-    // Bit 6	= D/C (Data/Command)    D/C = 0 → the next byte is a command
-    //                                  D/C = 1 → the next byte is data
-    // Bit 5-0	 = ignored, must be 0
-    uint8_t buf[2] = {0x00, cmd};
-
-    // i2c_write_blocking sends a byte, taking care of start and stop conditions
-    // argument 1: which i2c peripheral 
-    // argument 2: device adress
-    // argument 3: pointer to the buffer of bytes you want to send
-    // argument 4: number of bytes in the array
-    // argument 5: false at the end means a stop condition will be sent
-    // returns number of bytes written, should be 2
-    
-    int ret = i2c_write_blocking(i2c0, 0x3C, buf, 2, false);
-    
-    if (ret != 2) {
-        // handle error
-        gpio_put(25, true);
-    }
-}
-
-
-void send_i2c_data(uint8_t data) {
-    uint8_t buf[2] = {0x40, data};
-    int ret = i2c_write_blocking(i2c0, 0x3C, buf, 2, false);
-    if (ret != 2) {
-        // handle error
-        gpio_put(25, true);
-    }
-}
-
-
-
-void set_col_addr(uint8_t start, uint8_t end) {
-    send_i2c_command(0x21); // Column address command
-    send_i2c_command(start);
-    send_i2c_command(end);
-}
-
-void set_page_addr(uint8_t start, uint8_t end) {
-    send_i2c_command(0x22); // Page address command
-    send_i2c_command(start);
-    send_i2c_command(end);
-}
-
-
-
-
-
-
-void clear_display(void) {
-    set_col_addr(0, 127);
-	set_page_addr(0, 7);
-    for (int i = 0; i < 128 * 8; i++) { // 128 columns * 8 pages
-        send_i2c_data(0x00);
-    }
-}
-
-
-
-void screen_init(void){
-    
-    send_i2c_command(0xAE); // Display OFF
-
-    send_i2c_command(0xA8); // Set MUX Ratio
-    send_i2c_command(0x3F); // sets to 63
-
-    send_i2c_command(0xD3); // Set display offset
-    send_i2c_command(0x00); // no offset
-
-    send_i2c_command(0x40); // Set display start line
-
-    send_i2c_command(0xA1); // column address mapped to 127 // Left to right
-
-    send_i2c_command(0xC8); // COM output scan direction // Start top
-
-    send_i2c_command(0xDA); // COM pin hardware configuration
-    send_i2c_command(0x12); // 128x64 configuration
-
-    send_i2c_command(0x81); // contrast control
-    send_i2c_command(0x7F);
-
-    send_i2c_command(0xA4); // Entire display ON (resume RAM)
-
-    send_i2c_command(0xA6); // Normal display mode
-
-    send_i2c_command(0xD5); // set oscolation frequency
-    send_i2c_command(0x80);
-
-    send_i2c_command(0x8D); // set charge pump
-    send_i2c_command(0x14); // enable charge pump
-
-    send_i2c_command(0x20); // Set memory addressing mode
-    send_i2c_command(0x00); // Horizontal addressing
-
-    send_i2c_command(0xAF); // Display ON
-
-}
-
-
-
-
-
-void display_trine_logo(void){
-	set_col_addr(14, 113);
-	set_page_addr(2, 5);
-	for (uint16_t i = 0; i<300; i++){
-		send_i2c_data(Trine_Logo[i]);
-	}
-    set_col_addr(14, 113);
-	set_page_addr(5, 5);
-    for (uint8_t i = 0; i<100; i++){
-        send_i2c_data(University_Logo[i]);
-    }
-}
-
-
-void send_small_char(int character, uint8_t col, uint8_t page){
-    uint8_t index = (uint8_t)character;
-    set_col_addr(col, col+5);
-    set_page_addr(page, page);
-    for (uint8_t i = 0; i<5; i++){
-        send_i2c_data(small_font[index][i]);
-    }
-}
-
-
-
-
-
-void send_big_char(int character, uint8_t col, uint8_t page){
-    uint8_t index = (uint8_t)character;
-    set_col_addr(col, col+7);
-    set_page_addr(page, page+1);
-    for (uint8_t i = 0; i<16; i++){
-        send_i2c_data(big_letters[index][i]);
-    }
-
-}
-
-void send_PS_symbol(int character, uint8_t col, uint8_t page){
-    uint8_t index = 0;
-
-    if (character == 'X'){
-        index == 0;
-    } else if (character == 'S'){
-        index = 1;
-    } else if (character == 'O'){
-        index = 2;
-    } else if (character == 'T'){
-        index = 3;
-    } else {
-        index = 4;
-    }
-
-    set_col_addr(col, col+15);
-    set_page_addr(page, page+1);
-    for (uint8_t i = 0; i<32; i++){
-        send_i2c_data(PS_symbols[index][i]);
-    }
-
-}

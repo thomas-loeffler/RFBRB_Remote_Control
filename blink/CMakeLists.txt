@@ -36,14 +36,16 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(blink
-    main.c
-    display.c
-    )
+    source/main.c
+    source/display_font.c
+    source/display_functions.c
+    source/peripheral_setup.c
+)
+
 
 
 # Tell compiler where to find your own headers
 target_include_directories(blink PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}   # current folder
     ${CMAKE_CURRENT_LIST_DIR}/include  # if you put headers in 'include'
 )
 
@@ -51,6 +53,8 @@ target_include_directories(blink PRIVATE
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib)
 target_link_libraries(blink pico_stdlib hardware_i2c)
+
+
 
 
 if (PICO_CYW43_SUPPORTED)
