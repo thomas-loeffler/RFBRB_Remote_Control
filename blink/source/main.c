@@ -5,6 +5,8 @@
  */
 
 
+#include "tusb.h"
+
 #include "display_functions.h"
 #include "peripheral_setup.h"
 
@@ -12,8 +14,12 @@
 
 
 
-
 int main() {
+
+
+    tuh_init(0);  // Initialize USB host stack
+
+
     onboard_led_setup();
     i2c_setup();
 
@@ -30,5 +36,9 @@ int main() {
 
     while (1) {
         // simple cycle
+        //tuh_task();  // REQUIRED: USB host polling
+        //process_usb_report();
+        //update_display();
+        //
     }
 }

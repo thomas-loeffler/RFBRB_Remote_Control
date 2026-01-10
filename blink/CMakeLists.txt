@@ -2,6 +2,10 @@
 
 cmake_minimum_required(VERSION 3.13)
 
+# Enabling TinyUSB host mode
+set(PICO_TINYUSB_HOST 1)
+set(PICO_TINYUSB_DEVICE 0)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -40,6 +44,7 @@ add_executable(blink
     source/display_font.c
     source/display_functions.c
     source/peripheral_setup.c
+    source/usb_functions.c
 )
 
 
@@ -51,9 +56,16 @@ target_include_directories(blink PRIVATE
 
 
 # pull in common dependencies
-target_link_libraries(blink pico_stdlib)
-target_link_libraries(blink pico_stdlib hardware_i2c)
+target_link_libraries(blink
+    pico_stdlib
+    hardware_i2c
+    tinyusb_host
+)
 
+
+# --- stdio configuration (IMPORTANT for USB host) ---
+pico_enable_stdio_usb(blink 0)
+pico_enable_stdio_uart(blink 1)
 
 
 
