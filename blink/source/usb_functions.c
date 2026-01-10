@@ -3,14 +3,6 @@
 #include "tusb.h"
 #include "usb_functions.h"
 
-// Struct containing all DS4 controller inputs
-typedef struct {
-    uint8_t LjoyX, LjoyY, RjoyX, RjoyY; // Analog stick positions
-    uint8_t L2, R2;                     // Trigger positions
-    uint8_t buttons1, buttons2;         // All button states (facebuttons, dpad, bumpers, stick-click, share, options, ps, touchpad)
-    bool ready;                         // for tracking if new data is available/ready to be processed
-    bool connected; // for tracking connection status (displayed on screen)
-} ds4_report;
 
 ds4_report ds4; // Global instance of DS4 report struct
 

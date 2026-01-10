@@ -31,8 +31,7 @@ int main() {
     sleep_ms(3000);
     clear_display();
     sleep_ms(500);
-
-    void display_all_fonts(void);
+    display_all_fonts();
     
 
     while (1) {

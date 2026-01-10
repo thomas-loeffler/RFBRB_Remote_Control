@@ -11,8 +11,9 @@
 // File includes
 #include "display_functions.h"
 #include "display_font.h"
+#include "usb_functions.h"
 
-
+extern ds4_report ds4;
 
 
 //////////////////////////////////////
@@ -274,4 +275,166 @@ void display_all_fonts(void){
     send_PS_symbol('S', 78, 6);
     send_PS_symbol('O', 95, 6);
     send_PS_symbol('T', 112, 6);
+}
+
+
+void ds4_inputs_display_setup(void){
+    send_small_char('L', 0, 0);
+    send_small_char('J', 7, 0);
+    send_small_char('O', 14, 0);
+    send_small_char('Y', 21, 0);
+    send_small_char('X', 28, 0);  
+    send_small_char(':', 35, 0);  
+    
+    send_small_char('L', 63, 0);
+    send_small_char('J', 70, 0);
+    send_small_char('O', 77, 0);
+    send_small_char('Y', 84, 0);
+    send_small_char('Y', 91, 0);  
+    send_small_char(':', 98, 0);
+
+    send_small_char('R', 0, 1);
+    send_small_char('J', 7, 1);
+    send_small_char('O', 14, 1);
+    send_small_char('Y', 21, 1);
+    send_small_char('X', 28, 1);  
+    send_small_char(':', 35, 1);  
+    
+    send_small_char('R', 63, 1);
+    send_small_char('J', 70, 1);
+    send_small_char('O', 77, 1);
+    send_small_char('Y', 84, 1);
+    send_small_char('Y', 91, 1);  
+    send_small_char(':', 98, 1);
+
+    send_small_char('R', 0, 2);
+    send_small_char('2', 7, 2);
+
+    send_small_char('L', 42, 2);
+    send_small_char('2', 49, 2);
+
+
+
+
+
+
+    send_small_char('B', 0, 5);
+    send_small_char('T', 7, 5);
+    send_small_char('N', 14, 5);
+    send_small_char('S', 21, 5);
+    send_small_char('1', 28, 5);
+    send_small_char(':', 35, 5);
+
+    send_small_char('B', 0, 6);
+    send_small_char('T', 7, 6);
+    send_small_char('N', 14, 6);
+    send_small_char('S', 21, 6);
+    send_small_char('2', 28, 6);
+    send_small_char(':', 35, 6);
+
+    send_small_char('C', 0, 7);
+    send_small_char('N', 7, 7);
+    send_small_char('T', 14, 7);
+    send_small_char('R', 21, 7);
+    send_small_char('L', 28, 7);
+    send_small_char('R', 35, 7);
+
+}
+
+void update_ds4_inputs(void){
+    uint8_t LjoyX_prev;
+    uint8_t LjoyY_prev;
+    uint8_t RjoyX_prev;
+    uint8_t RjoyY_prev;
+    uint8_t L2_prev;
+    uint8_t R2_prev;
+    uint8_t buttons1_prev;
+    uint8_t buttons2_prev;
+    bool connected_prev;
+
+    if (ds4.LjoyX != LjoyX_prev){
+        LjoyX_prev = ds4.LjoyX;
+        // Update LjoyX
+        send_small_char((ds4.LjoyX / 100), 42, 0); // Hundreds
+        send_small_char(((ds4.LjoyX / 10) % 10), 49, 0); // Tens
+        send_small_char((ds4.LjoyX % 10), 56, 0); // Ones
+    }
+    
+    if (ds4.LjoyY != LjoyY_prev){
+        LjoyY_prev = ds4.LjoyY;
+        // Update LjoyY
+        send_small_char((ds4.LjoyY / 100), 105, 0); // Hundreds
+        send_small_char(((ds4.LjoyY / 10) % 10), 112, 0); // Tens
+        send_small_char((ds4.LjoyY % 10), 119, 0); // Ones
+    }
+
+    if (ds4.RjoyX != RjoyX_prev){
+        RjoyX_prev = ds4.RjoyX;
+        // Update RjoyX
+        send_small_char((ds4.RjoyX / 100), 42, 1); // Hundreds
+        send_small_char(((ds4.RjoyX / 10) % 10), 49, 1); // Tens
+        send_small_char((ds4.RjoyX % 10), 56, 1); // Ones
+    }
+
+    if (ds4.RjoyY != RjoyY_prev){
+        RjoyY_prev = ds4.RjoyY;
+        // Update RjoyY
+        send_small_char((ds4.RjoyY / 100), 105, 1); // Hundreds
+        send_small_char(((ds4.RjoyY / 10) % 10), 112, 1); // Tens
+        send_small_char((ds4.RjoyY % 10), 119, 1); // Ones
+    }
+
+    if (ds4.L2 != L2_prev){
+        L2_prev = ds4.L2;
+        // Update Left trigger
+        send_small_char((ds4.L2 / 100), 14, 2); // Hundreds
+        send_small_char(((ds4.L2 / 10) % 10), 21, 2); // Tens
+        send_small_char((ds4.L2 % 10), 28, 2); // Ones
+    }
+
+    
+    if (ds4.R2 != R2_prev){
+        R2_prev = ds4.R2;
+        // Update Right trigger
+        send_small_char((ds4.R2 / 100), 56, 2); // Hundreds
+        send_small_char(((ds4.R2 / 10) % 10), 63, 2); // Tens
+        send_small_char((ds4.R2 % 10), 70, 2); // Ones
+    }
+
+    if (ds4.buttons1 != buttons1_prev){
+        buttons1_prev = ds4.buttons1;
+        // Update Buttons
+        send_small_char((ds4.buttons1 & 0x01), 42, 5);
+        send_small_char((ds4.buttons1 & 0x02) >> 1, 49, 5);
+        send_small_char((ds4.buttons1 & 0x04) >> 2, 56, 5);
+        send_small_char((ds4.buttons1 & 0x08) >> 3, 63, 5);
+        send_small_char((ds4.buttons1 & 0x10) >> 4, 70, 5);
+        send_small_char((ds4.buttons1 & 0x20) >> 5, 77, 5);
+        send_small_char((ds4.buttons1 & 0x40) >> 6, 84, 5);
+        send_small_char((ds4.buttons1 & 0x80) >> 7, 91, 5);
+    }
+
+    if (ds4.buttons2 != buttons2_prev){
+        buttons2_prev = ds4.buttons2;
+        // Update Buttons
+        send_small_char((ds4.buttons2 & 0x01), 42, 6);
+        send_small_char((ds4.buttons2 & 0x02) >> 1, 49, 6);
+        send_small_char((ds4.buttons2 & 0x04) >> 2, 56, 6);
+        send_small_char((ds4.buttons2 & 0x08) >> 3, 63, 6);
+        send_small_char((ds4.buttons2 & 0x10) >> 4, 70, 6);
+        send_small_char((ds4.buttons2 & 0x20) >> 5, 77, 6);
+        send_small_char((ds4.buttons2 & 0x40) >> 6, 84, 6);
+        send_small_char((ds4.buttons2 & 0x80) >> 7, 91, 6);
+    }
+
+    if (ds4.connected != connected_prev){
+        connected_prev = ds4.connected;
+
+        // Update Connection Status
+        send_small_char(ds4.connected, 49, 7);
+    }
+   
+
+
+   
 }
