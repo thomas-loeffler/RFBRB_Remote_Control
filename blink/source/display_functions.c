@@ -434,7 +434,4 @@ void update_ds4_inputs(void){
         send_small_char(ds4.connected, 49, 7);
     }
    
-
-
-   
 }
