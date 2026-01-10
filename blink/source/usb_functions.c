@@ -3,18 +3,19 @@
 #include "tusb.h"
 #include "usb_functions.h"
 
-
+// Struct containing all DS4 controller inputs
 typedef struct {
-    uint8_t LjoyX, LjoyY, RjoyX, RjoyY;
-    uint8_t L2, R2;
-    uint8_t buttons1, buttons2;
-    bool ready;
-    bool connected;
-} ds4_report_t;
+    uint8_t LjoyX, LjoyY, RjoyX, RjoyY; // Analog stick positions
+    uint8_t L2, R2;                     // Trigger positions
+    uint8_t buttons1, buttons2;         // All button states (facebuttons, dpad, bumpers, stick-click, share, options, ps, touchpad)
+    bool ready;                         // for tracking if new data is available/ready to be processed
+    bool connected; // for tracking connection status (displayed on screen)
+} ds4_report;
 
-ds4_report_t ds4;
+ds4_report ds4; // Global instance of DS4 report struct
 
-static uint8_t count = 0;
+static uint8_t count = 0; // count for input report throttling
+                          // ie. only update every 10th report
 
 
 
@@ -33,7 +34,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr,
 
 
 
-// Device disconnected
+// Runs when device is disconnected
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance)
 {
     ds4.connected = false;
@@ -42,15 +43,15 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance)
 
 
 
-// A HID report is received
+// Runs when a HID report is received
 void tuh_hid_report_received_cb(uint8_t dev_addr,
                                 uint8_t instance,
                                 uint8_t const* report,
                                 uint16_t len)
 {
-    count++;
+    count++; // increment report count for throttling
 
-    if (count >= 10){
+    if (count >= 10){ // only update every 10th report
         ds4.LjoyX = report[1];
         ds4.LjoyY = report[2];
         ds4.RjoyX = report[3];

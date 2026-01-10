@@ -45,6 +45,7 @@ add_executable(blink
     source/display_functions.c
     source/peripheral_setup.c
     source/usb_functions.c
+    source/queue.c
 )
 
 
