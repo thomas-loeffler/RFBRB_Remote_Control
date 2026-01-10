@@ -4,8 +4,12 @@
 //	           INCLUDES             //
 //////////////////////////////////////
 
+// Standard includes / hardware headers
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+
+// File includes
+#include "display_functions.h"
 #include "display_font.h"
 
 

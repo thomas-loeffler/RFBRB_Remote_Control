@@ -1,5 +1,5 @@
 
-#include "pico/stdlib.h"
+#include <stdint.h>
 #include "display_font.h"
 
 const uint8_t Trine_Logo[300]= {
@@ -36,7 +36,8 @@ const uint8_t University_Logo[100]= {
 };
 
 
-
+// Font for letters and numbers that are 5x8 pixels
+// Large array because it follows the ASCII table for easy indexing
 const uint8_t font_8p[91][5] = {
 
     // Numbers 0-9 (decimal)
@@ -63,6 +64,9 @@ const uint8_t font_8p[91][5] = {
     [55] = {0x01, 0x71, 0x09, 0x05, 0x03}, // '7'
     [56] = {0x36, 0x49, 0x49, 0x49, 0x36}, // '8'
     [57] = {0x06, 0x49, 0x49, 0x29, 0x1E}, // '9'
+    
+    // Special Characters
+    [58] = {0x00, 0x00, 0x44, 0x00, 0x00}, // ':'
 
     // Uppercase A-Z
     [65] = {0x7C, 0x12, 0x11, 0x12, 0x7C}, // 'A'
@@ -94,7 +98,8 @@ const uint8_t font_8p[91][5] = {
 };
 
 
-// 8x16 upright uppercase letters for SSD1306
+// Font for letters and numbers that are 8x16 pixels
+// Large array because it follows the ASCII table for easy indexing
 const uint8_t font_16p[91][16] = {
     // Numbers 0-9 (decimal)
     [0] = { 0x00, 0xE0, 0x10, 0x08, 0x08, 0x10, 0xE0, 0x00,

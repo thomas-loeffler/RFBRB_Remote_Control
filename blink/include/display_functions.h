@@ -1,6 +1,5 @@
 
-#include "pico/stdlib.h"
-
+#include <stdint.h>
 
 
 void send_i2c_command(uint8_t cmd);

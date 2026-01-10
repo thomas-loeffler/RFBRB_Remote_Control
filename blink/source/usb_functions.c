@@ -1,6 +1,7 @@
 
 #include <stdint.h>
 #include "tusb.h"
+#include "usb_functions.h"
 
 
 typedef struct {
